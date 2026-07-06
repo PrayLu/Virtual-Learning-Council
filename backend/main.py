@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+import os
 import sys
 from pathlib import Path
 
@@ -31,9 +32,18 @@ from src.storage import (
 
 app = FastAPI(title="Virtual Learning Council API")
 
+def _cors_origins() -> list[str]:
+    origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    extra = os.getenv("ALLOWED_ORIGINS", "")
+    if extra:
+        origins.extend(o.strip() for o in extra.split(",") if o.strip())
+    return origins
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=_cors_origins(),
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

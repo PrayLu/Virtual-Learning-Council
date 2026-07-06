@@ -27,6 +27,8 @@ cd web && npm install && cd ..
 
 打开 http://localhost:3000 即可使用。
 
+> **部署到 Vercel？** 详见 [DEPLOY.md](./DEPLOY.md)
+
 - **Web UI**：http://localhost:3000
 - **API**：http://localhost:8000
 
@@ -64,7 +66,7 @@ python main.py examples/sample_course.txt --title "论语与管理"
 ```
 Virtual Learning Council/
 ├── agents/                  # 评审团成员人设档案（独立 YAML）
-├── api/                     # FastAPI 后端 + SSE 流式推送
+├── backend/                 # FastAPI 后端 + SSE 流式推送
 │   └── main.py
 ├── web/                     # Next.js 前端（暗色议事厅 UI）
 │   ├── app/                 # 入席页 + 议事厅 + 综合报告

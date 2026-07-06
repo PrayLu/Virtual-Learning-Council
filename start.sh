@@ -9,7 +9,7 @@ echo "🚀 Starting Virtual Learning Council..."
 # Backend
 echo "→ API server on http://localhost:8000"
 cd "$ROOT"
-python3 -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8000 &
+python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000 &
 API_PID=$!
 
 # Frontend
