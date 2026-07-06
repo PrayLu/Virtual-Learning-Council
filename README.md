@@ -8,24 +8,29 @@
 
 帮助课程在真正上线前，完成一次「企业真实共学模拟」。
 
-## 快速开始（Web UI）
+## 快速开始（本地开发）
 
 ```bash
-# 1. 安装 Python 依赖
-pip install -r backend/requirements.txt
-
-# 2. 安装前端依赖
-cd web && npm install && cd ..
-
-# 2. 配置 API Key
+# 1. 配置 DeepSeek API Key
 cp .env.example .env
-# 编辑 .env，填入 OPENAI_API_KEY
+# 编辑 .env，填入你的 DeepSeek API Key
 
-# 3. 一键启动（API + Web）
+# 2. 一键启动（自动检查依赖、等待 API 就绪）
 ./start.sh
 ```
 
 打开 http://localhost:3000 即可使用。
+
+本地配置说明：
+- **LLM**：DeepSeek（`deepseek-chat`），配置在项目根目录 `.env`
+- **API**：http://localhost:8000（自动启动）
+- **Web**：http://localhost:3000（`web/.env.local` 已指向本地 API）
+
+验证 API 是否正常：
+```bash
+curl http://localhost:8000/api/health
+# 应返回 "provider": "DeepSeek", "model": "deepseek-chat"
+```
 
 > **部署到 Vercel？** 详见 [DEPLOY.md](./DEPLOY.md)
 
@@ -74,7 +79,7 @@ Virtual Learning Council/
 │   └── public/avatars/      # AI 生成的人物头像
 ├── src/                     # 多智能体编排核心
 ├── examples/
-├── main.py                  # CLI 入口
+├── cli.py                   # CLI 入口
 └── start.sh                 # 一键启动脚本
 ```
 

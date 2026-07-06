@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { fetchAgents, createReview } from "@/lib/api";
+import { STATIC_AGENTS } from "@/lib/agents-static";
 import type { Agent } from "@/lib/types";
 import { ParticleBackground } from "@/components/ParticleBackground";
 import { UploadZone } from "@/components/UploadZone";
 import { ReviewHistory } from "@/components/ReviewHistory";
+import { ApiStatusBanner } from "@/components/ApiStatusBanner";
 
 export default function HomePage() {
   const router = useRouter();
@@ -17,7 +19,7 @@ export default function HomePage() {
   useEffect(() => {
     fetchAgents()
       .then((data) => setAgents(data.agents))
-      .catch(console.error);
+      .catch(() => setAgents(STATIC_AGENTS));
   }, []);
 
   const handleSubmit = async (title: string, content: string) => {
@@ -26,8 +28,8 @@ export default function HomePage() {
       const { review_id } = await createReview(title, content);
       router.push(`/review/${review_id}?title=${encodeURIComponent(title)}`);
     } catch (e) {
-      console.error(e);
-      alert("启动评审失败，请确认后端服务已启动");
+      const msg = e instanceof Error ? e.message : "启动评审失败";
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,8 @@ export default function HomePage() {
       <ParticleBackground />
 
       <div className="relative z-10 py-20 min-h-screen flex flex-col justify-center">
-        <UploadZone agents={agents} onSubmit={handleSubmit} loading={loading} />
+        <ApiStatusBanner />
+        <UploadZone agents={agents.length ? agents : STATIC_AGENTS} onSubmit={handleSubmit} loading={loading} />
         <ReviewHistory />
       </div>
 

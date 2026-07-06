@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.agent_loader import load_council_agents, load_chief_reviewer
 from src.council import run_council_review
+from src.llm import get_llm_info
 from src.storage import (
     delete_review,
     list_reviews,
@@ -238,6 +239,7 @@ async def health():
         "status": "ok",
         "service": "Virtual Learning Council",
         "stored_reviews": len(list_reviews()),
+        "llm": get_llm_info(),
     }
 
 
