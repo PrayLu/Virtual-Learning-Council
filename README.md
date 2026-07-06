@@ -12,16 +12,16 @@
 
 ```bash
 # 1. 安装 Python 依赖
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
+
+# 2. 安装前端依赖
+cd web && npm install && cd ..
 
 # 2. 配置 API Key
 cp .env.example .env
 # 编辑 .env，填入 OPENAI_API_KEY
 
-# 3. 安装前端依赖
-cd web && npm install && cd ..
-
-# 4. 一键启动（API + Web）
+# 3. 一键启动（API + Web）
 ./start.sh
 ```
 
@@ -35,7 +35,7 @@ cd web && npm install && cd ..
 ## 快速开始（CLI）
 
 ```bash
-python main.py examples/sample_course.txt --title "论语与管理"
+python cli.py examples/sample_course.txt --title "论语与管理"
 ```
 
 ## 系统流程

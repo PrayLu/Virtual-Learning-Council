@@ -2,88 +2,72 @@
 
 ## 问题原因
 
-`{"detail":"Not Found"}` 是 **FastAPI** 的 404 响应。
+Vercel 在仓库根目录发现了 `main.py` + `requirements.txt`，误以为是 **FastAPI 项目**，而不是 `web/` 里的 Next.js。
 
-Vercel 默认部署**仓库根目录**，发现了 `api/` 文件夹后把它当成 Python Serverless Function 运行，而不是部署 `web/` 里的 Next.js 前端。
+现已修复：Python 文件已移走，根目录加了 `vercel.json` 强制构建 Next.js。
 
 ---
 
-## 第一步：Vercel 只部署前端（必做）
+## 方案 A：推荐（Root Directory = web）
 
 在 Vercel 控制台：
 
-1. 打开项目 **counci** → **Settings** → **General**
-2. 找到 **Root Directory**
-3. 点击 **Edit**，填入：`web`
-4. 保存后去 **Deployments** → 最新部署 → **Redeploy**
-
-完成后访问 `https://counci.vercel.app` 应该能看到 Virtual Learning Council 入席页。
+1. 项目 **Settings** → **General** → **Root Directory**
+2. 填入：`web`
+3. **Save** → **Deployments** → **Redeploy**
 
 ---
 
-## 第二步：后端单独部署（评审功能需要）
+## 方案 B：不改 Root Directory
 
-前端只是界面，**AI 评审必须靠 Python 后端**（FastAPI + DeepSeek）。
+如果 Root Directory 留空，根目录的 `vercel.json` 和 `package.json` 会自动构建 `web/` 子项目。
 
-推荐 [Railway](https://railway.app) 或 [Render](https://render.com)：
+直接 **Redeploy** 即可。
 
-### Railway 部署步骤
+---
 
-1. 新建项目 → **Deploy from GitHub** → 选择本仓库
-2. **Root Directory** 留空（用仓库根目录）
-3. **Start Command**：
+## 后端必须单独部署
+
+评审功能需要 Python 后端（Vercel 跑不了长时间 AI 任务）。
+
+### Railway 步骤
+
+1. 新建项目 → GitHub 仓库
+2. Start Command：
    ```bash
-   uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+   pip install -r backend/requirements.txt && uvicorn backend.main:app --host 0.0.0.0 --port $PORT
    ```
-4. 环境变量：
+3. 环境变量：
    ```
    OPENAI_API_KEY=你的DeepSeek密钥
    OPENAI_BASE_URL=https://api.deepseek.com
    OPENAI_MODEL=deepseek-chat
    ALLOWED_ORIGINS=https://counci.vercel.app
    ```
-5. 部署完成后复制 Railway 给的域名
 
-### 验证后端
-
-访问 `https://你的后端域名/api/health`，应返回：
-
-```json
-{"status":"ok","service":"Virtual Learning Council"}
-```
-
----
-
-## 第三步：Vercel 连接后端
-
-在 Vercel 项目 → **Settings** → **Environment Variables**：
+### Vercel 环境变量
 
 | 变量名 | 值 |
 |--------|-----|
-| `NEXT_PUBLIC_API_URL` | `https://你的后端域名`（不要加末尾斜杠） |
+| `NEXT_PUBLIC_API_URL` | `https://你的Railway域名` |
 
-保存后 **Redeploy** 一次。
-
----
-
-## 架构总览
-
-```
-用户浏览器
-    ↓
-Vercel（web/ Next.js 前端）  ← counci.vercel.app
-    ↓ API 请求
-Railway（backend/ FastAPI）   ← 你的后端域名
-    ↓
-DeepSeek API
-```
+保存后 Redeploy。
 
 ---
 
-## 常见问题
+## 验证
 
-| 现象 | 原因 | 解决 |
+| 地址 | 期望结果 |
+|------|----------|
+| `https://counci.vercel.app` | Virtual Learning Council 入席页 |
+| `https://后端域名/api/health` | `{"status":"ok"}` |
+
+---
+
+## 常见错误
+
+| 错误 | 原因 | 解决 |
 |------|------|------|
-| `{"detail":"Not Found"}` | Root Directory 没设成 `web` | 按第一步操作 |
-| 页面正常但无法评审 | 后端未部署或 API URL 未配置 | 完成第二、三步 |
-| CORS 错误 | 后端未允许 Vercel 域名 | 设置 `ALLOWED_ORIGINS` |
+| `Found main.py but no FastAPI app` | Vercel 误识别 Python | push 最新代码后 Redeploy |
+| `{"detail":"Not Found"}` | 跑了 FastAPI 不是 Next.js | 设 Root Directory = `web` |
+| 页面正常但无法评审 | 后端未部署 | 部署 Railway + 配 API URL |
