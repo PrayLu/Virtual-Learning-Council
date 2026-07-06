@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+outputs/
+data/reviews/*.json
+data/reviews/*.md
+.DS_Store
+web/node_modules/
+web/.next/
+web/.env.local
